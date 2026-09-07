@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #120c08;
+  --color-surface: #1e1510;
+  --color-raised: #2a1d14;
+  --color-fg: #f3e6cc;
+  --color-muted: #b39470;
+  --color-primary: #e4b14a;
+  --color-ember: #c45a28;
+  --color-ok: #8fbf6a;
+  --color-bad: #e0705c;
+  --color-border: #3a2c1c;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    min-height: 100%;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.oven-grain {
+  background-image:
+    radial-gradient(1200px 480px at 8% -20%, color-mix(in srgb, var(--color-ember) 22%, transparent), transparent 58%),
+    radial-gradient(900px 420px at 100% 0%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 52%);
+}
+
+.oven-ring {
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--color-raised) 80%, black) 0 38%, transparent 39%),
+    conic-gradient(from 210deg, var(--color-ember), var(--color-primary), #8a5a22, var(--color-ember));
+}

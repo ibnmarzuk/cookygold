@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "The Oven",
+      "hasCanvas": false,
+      "bodyTextLen": 1001,
+      "bodyTextHash": "8ca00b8aa99e310bfb6121b306f39aa115116681aa4e6d1517a607c1f1640176",
+      "bodyTextPrefix": "COOKIE CHAIN CAPP The Oven Nightly missing rpc.cookiescan.io Con",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "The Oven",
+      "hasCanvas": false,
+      "bodyTextLen": 1001,
+      "bodyTextHash": "c5bf7ccd3e6750b510ccbcfc2f9fc831020d03ff2f067d23cb48498c1235c88d",
+      "bodyTextPrefix": "COOKIE CHAIN CAPP The Oven Nightly missing rpc.cookiescan.io Con",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": false,
+  "baselineReasons": []
+}

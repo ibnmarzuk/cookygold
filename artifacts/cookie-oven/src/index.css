@@ -1,0 +1,191 @@
+:root {
+  --bg: #0d0a07;
+  --paper: #1c1510;
+  --ink: #f4e6c8;
+  --muted: #b89a72;
+  --line: #3a2c1c;
+  --gold: #e8b84a;
+  --ok: #7dce6a;
+  --bad: #ef6b5a;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #3a220e 0%, transparent 55%),
+    radial-gradient(900px 500px at 110% 10%, #4a1c0c 0%, transparent 50%),
+    var(--bg);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+h1, h2, h3 {
+  font-family: "Syne", sans-serif;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+a { color: var(--gold); }
+button, input, textarea { font: inherit; }
+
+.app {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 20px 80px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.brand { display: flex; gap: 14px; align-items: center; }
+.mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #f0c36a, #c45a22);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  box-shadow: var(--shadow);
+}
+.brand h1 { font-size: 28px; }
+.brand p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+.wallet-box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 16px;
+  min-width: 280px;
+  box-shadow: var(--shadow);
+}
+
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.addr { font-size: 12px; color: var(--gold); }
+.pill {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.pill.ok { color: var(--ok); border-color: #2d5a28; }
+.pill.warn { color: var(--gold); }
+
+button.primary, button.ghost {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+button.primary {
+  background: linear-gradient(180deg, #f0c36a, #d3922a);
+  color: #1a1208;
+  font-weight: 600;
+}
+button.primary:disabled { opacity: 0.5; cursor: wait; }
+button.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 22px;
+  margin-bottom: 28px;
+}
+@media (max-width: 860px) {
+  .hero, .grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 22px;
+}
+
+.hero h2 {
+  font-size: 42px;
+  line-height: 0.95;
+  margin-bottom: 10px;
+}
+.lede {
+  font-family: "Instrument Serif", serif;
+  font-size: 22px;
+  color: #ead7b3;
+  margin: 0 0 18px;
+}
+
+label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+textarea {
+  width: 100%;
+  min-height: 88px;
+  background: #120e0a;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+.status {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+.status.pending { border-color: #8a6a22; color: var(--gold); }
+.status.ok { border-color: #2d5a28; color: var(--ok); }
+.status.bad { border-color: #6a2a22; color: var(--bad); }
+
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.stat {
+  background: #120e0a;
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+}
+.stat b { display: block; font-size: 18px; font-family: Syne, sans-serif; }
+.stat span { color: var(--muted); font-size: 11px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 0; }
+td { padding: 8px 0; border-top: 1px solid var(--line); }
+.empty { color: var(--muted); font-size: 13px; }
+
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.links a {
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--ink);
+}
+
+footer {
+  margin-top: 40px;
+  color: var(--muted);
+  font-size: 12px;
+}
