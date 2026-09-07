@@ -1,0 +1,6 @@
+{
+  "name": "The Oven",
+  "description": "Bake a crumb on Cookie Chain. Nightly wallet, memo fortunes, live SVM pulse.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

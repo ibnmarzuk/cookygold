@@ -77,7 +77,11 @@ export default function App() {
   }
 
   function onDisconnect() {
-    try { wallet?.provider?.disconnect?.() } catch {}
+    try {
+      wallet?.provider?.disconnect?.()
+    } catch {
+      /* ignore disconnect errors */
+    }
     setWallet(null)
     setBalance(null)
     setActivity([])
