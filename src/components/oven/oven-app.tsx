@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Activity,
+  AlertCircle,
   Cookie,
   ExternalLink,
   Flame,
   Loader2,
+  Sparkles,
   Unplug,
   Wallet,
 } from "lucide-react";
@@ -42,6 +44,7 @@ import {
 import { mintFortune } from "@/lib/cookie/fortune";
 import { buildBakeTx, toBase64 } from "@/lib/cookie/tx";
 import {
+  connectDemoAddress,
   connectNightly,
   getNightly,
   type NightlySolana,
@@ -61,6 +64,9 @@ export function OvenApp({ initialPulse }: { initialPulse?: ChainPulse | null }) 
   const [pulseError, setPulseError] = useState<string | null>(null);
   const [wallet, setWallet] = useState<WalletView | null>(null);
   const [activity, setActivity] = useState<ActivityRow[]>([]);
+  const [connectHelpOpen, setConnectHelpOpen] = useState(false);
+  const [customInput, setCustomInput] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   useEffect(() => {
     const tick = () => setNightlyOn(Boolean(getNightly()));
@@ -104,20 +110,33 @@ export function OvenApp({ initialPulse }: { initialPulse?: ChainPulse | null }) 
 
   async function onConnect() {
     setBusy("connect");
-    setStatus({ kind: "pending", text: "Opening Nightly. Approve Cookie Chain if prompted." });
+    setStatus({ kind: "pending", text: "Opening wallet. Approve Cookie Chain if prompted." });
     try {
       const session = await connectNightly();
       setProvider(session.provider);
       setAddress(session.address);
+      setConnectHelpOpen(false);
       setStatus({
         kind: "ok",
         text: `Connected ${session.address}`,
       });
     } catch (err) {
+      setConnectHelpOpen(true);
       setStatus({ kind: "bad", text: humanError(err) });
     } finally {
       setBusy("");
     }
+  }
+
+  function onConnectDemo(customAddr?: string) {
+    const session = connectDemoAddress(customAddr);
+    setProvider(session.provider);
+    setAddress(session.address);
+    setConnectHelpOpen(false);
+    setStatus({
+      kind: "ok",
+      text: `Connected Demo Account ${session.address} (Read-only preview)`,
+    });
   }
 
   function onDisconnect() {
@@ -132,6 +151,13 @@ export function OvenApp({ initialPulse }: { initialPulse?: ChainPulse | null }) 
   async function onBake() {
     if (!address || !provider) {
       setStatus({ kind: "bad", text: "Connect Nightly first." });
+      return;
+    }
+    if (provider.isDemo) {
+      setStatus({
+        kind: "bad",
+        text: "Demo wallet is read-only. To sign real transactions on Cookie Chain, open the app in a new window with your Nightly wallet connected.",
+      });
       return;
     }
     setBusy("bake");
@@ -203,20 +229,27 @@ export function OvenApp({ initialPulse }: { initialPulse?: ChainPulse | null }) 
           <div className="w-full rounded-2xl border border-border bg-surface p-4 sm:w-auto sm:min-w-80">
             <div className="mb-3 flex flex-wrap gap-2">
               <span className={cn("rounded-full border px-2.5 py-1 text-xs", nightlyOn ? "border-ok/40 text-ok" : "border-border text-muted")}>
-                {nightlyOn ? "Nightly injected" : "Nightly missing"}
+                {nightlyOn ? "Wallet injected" : "Nightly not injected in iframe"}
               </span>
               <span className="rounded-full border border-border px-2.5 py-1 text-xs text-muted">rpc.cookiescan.io</span>
             </div>
             {address ? (
               <div className="flex flex-col gap-3">
-                <a
-                  className="font-medium text-primary underline-offset-4 hover:underline"
-                  href={explorerAddr(address)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {shortAddr(address, 6)}
-                </a>
+                <div className="flex items-center justify-between gap-2">
+                  <a
+                    className="font-medium text-primary underline-offset-4 hover:underline"
+                    href={explorerAddr(address)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {shortAddr(address, 6)}
+                  </a>
+                  {provider?.isDemo && (
+                    <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                      Demo Account
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-ok/30 px-3 py-1 text-sm tabular-nums text-ok">
                     {wallet ? `${wallet.cook.toFixed(6)} COOK` : "balance…"}
@@ -232,15 +265,92 @@ export function OvenApp({ initialPulse }: { initialPulse?: ChainPulse | null }) 
                 </div>
               </div>
             ) : (
-              <button
-                type="button"
-                disabled={Boolean(busy)}
-                onClick={() => void onConnect()}
-                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-bg disabled:opacity-50"
-              >
-                {busy === "connect" ? <Loader2 className="size-4 animate-spin" /> : <Wallet className="size-4" />}
-                {busy === "connect" ? "Connecting…" : "Connect Nightly"}
-              </button>
+              <>
+                <button
+                  type="button"
+                  disabled={Boolean(busy)}
+                  onClick={() => void onConnect()}
+                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-bg disabled:opacity-50 transition-colors hover:brightness-110 active:scale-[0.99]"
+                >
+                  {busy === "connect" ? <Loader2 className="size-4 animate-spin" /> : <Wallet className="size-4" />}
+                  {busy === "connect" ? "Connecting…" : (nightlyOn ? "Connect Wallet" : "Connect Nightly")}
+                </button>
+
+                {(!nightlyOn || connectHelpOpen) && (
+                  <div className="mt-3 flex flex-col gap-2.5 rounded-xl border border-border bg-bg/70 p-3 text-xs">
+                    <div className="flex items-start gap-2 text-muted">
+                      <AlertCircle className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                      <p className="leading-relaxed">
+                        {nightlyOn
+                          ? "Click connect to approve in your wallet extension."
+                          : "Preview iframe blocks extensions or Nightly is not installed."}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => onConnectDemo()}
+                        className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-primary/40 bg-surface px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+                      >
+                        <Sparkles className="size-3.5" aria-hidden />
+                        Explore with Demo Wallet (72.66 COOK)
+                      </button>
+
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => window.open(window.location.href, "_blank")}
+                          className="inline-flex min-h-8 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-2 py-1 text-xs text-fg transition-colors hover:bg-bg"
+                        >
+                          <ExternalLink className="size-3" aria-hidden />
+                          Open in Tab
+                        </button>
+                        <a
+                          href={NIGHTLY}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex min-h-8 items-center justify-center gap-1 rounded-lg border border-border bg-surface px-2 py-1 text-xs text-muted transition-colors hover:text-fg hover:bg-bg"
+                        >
+                          Get Nightly
+                          <ExternalLink className="size-3" aria-hidden />
+                        </a>
+                      </div>
+
+                      {showCustomInput ? (
+                        <div className="mt-1 flex gap-1.5">
+                          <input
+                            type="text"
+                            placeholder="Paste base58 address..."
+                            value={customInput}
+                            onChange={(e) => setCustomInput(e.target.value)}
+                            className="w-full rounded-lg border border-border bg-surface px-2 py-1 text-xs text-fg placeholder:text-muted/60 outline-none focus:border-primary"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (customInput.trim().length >= 32) {
+                                onConnectDemo(customInput.trim());
+                              }
+                            }}
+                            className="rounded-lg bg-primary px-3 py-1 text-xs font-semibold text-bg"
+                          >
+                            Load
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setShowCustomInput(true)}
+                          className="pt-0.5 text-left text-[11px] text-muted underline underline-offset-2 hover:text-fg"
+                        >
+                          Or inspect custom address...
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </header>

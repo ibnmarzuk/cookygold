@@ -7,12 +7,23 @@ export type NightlySolana = {
   changeNetwork?: (n: { genesisHash: string; url?: string }) => Promise<void>;
   signAndSendTransaction?: (tx: unknown) => Promise<{ signature?: string } | string>;
   signTransaction?: (tx: unknown) => Promise<{ serialize: (opts?: unknown) => Uint8Array }>;
+  isDemo?: boolean;
 };
+
+export const DEMO_COOKIE_ADDRESS = "8uY6sMQKqgHsb1S1trEYeH25974Zv93jHn1A46Hn6GaV";
 
 export function getNightly(): NightlySolana | null {
   if (typeof window === "undefined") return null;
-  const nightly = (window as Window & { nightly?: { solana?: NightlySolana } }).nightly;
-  return nightly?.solana ?? null;
+  const w = window as unknown as {
+    nightly?: { solana?: NightlySolana };
+    phantom?: { solana?: NightlySolana };
+    solana?: NightlySolana;
+  };
+  return w.nightly?.solana ?? w.phantom?.solana ?? w.solana ?? null;
+}
+
+export function isWalletInjected(): boolean {
+  return getNightly() !== null;
 }
 
 export function pubkeyToString(value: unknown): string {
@@ -41,4 +52,15 @@ export async function connectNightly(): Promise<{ provider: NightlySolana; addre
   const address = pubkeyToString(res?.publicKey ?? res?.address ?? provider.publicKey);
   if (!address) throw new Error("Nightly connected but returned no public key.");
   return { provider, address };
+}
+
+export function connectDemoAddress(customAddr?: string): { provider: NightlySolana; address: string } {
+  const addr = (customAddr || DEMO_COOKIE_ADDRESS).trim();
+  const provider: NightlySolana = {
+    isDemo: true,
+    connect: async () => ({ address: addr }),
+    disconnect: async () => {},
+    publicKey: addr,
+  };
+  return { provider, address: addr };
 }
